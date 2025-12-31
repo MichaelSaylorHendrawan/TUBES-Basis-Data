@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -72,5 +73,11 @@ class DatabaseSeeder extends Seeder
             echo "Created ".min($i + $batch, $total)." / {$total}\n";
         }
         echo "Done!\n";
+
+        // Seed sample Porsche products (dev-friendly small number)
+        $productCount = env('SEED_PRODUCTS_COUNT', 200);
+        echo "Seeding {$productCount} Porsche products...\n";
+        Product::factory()->count($productCount)->create();
+        echo "Products seeded.\n";
     }
 }

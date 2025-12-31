@@ -60,6 +60,13 @@ class DashboardController extends Controller
                 ->groupBy('department')
                 ->get(),
             'latest_users' => User::orderBy('created_at', 'desc')->take(5)->get(),
+            // Showroom product stats
+            'total_products' => \App\Models\Product::count(),
+            'low_stock' => \App\Models\Product::where('stock', '<=', 2)->count(),
+            'products_by_category' => \App\Models\Product::select('category', DB::raw('count(*) as total'))
+                ->groupBy('category')
+                ->get(),
+            'latest_products' => \App\Models\Product::orderBy('created_at', 'desc')->take(5)->get(),
         ];
 
         return response()->json($stats);

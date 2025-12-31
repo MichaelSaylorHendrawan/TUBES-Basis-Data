@@ -247,82 +247,16 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useDashboardStore } from '../stores/dashboard'
+import { useProductStore } from '../stores/products'
+import ProductListView from './ProductListView.vue'
 import NavBar from '../components/NavBar.vue'
 
-const authStore = useAuthStore()
-const dashboardStore = useDashboardStore()
-
-const searchInput = ref('')
-const showAddModal = ref(false)
-
-// Computed properties
-const activeUsersCount = computed(() => {
-  return dashboardStore.users.filter(user => user.status === 'active').length
-})
-
-const pageRange = computed(() => {
-  const current = dashboardStore.pagination.current_page
-  const last = dashboardStore.pagination.last_page
-  const delta = 2
-  const range = []
-  
-  for (let i = Math.max(2, current - delta); i <= Math.min(last - 1, current + delta); i++) {
-    range.push(i)
-  }
-  
-  if (current - delta > 2) {
-    range.unshift('...')
-  }
-  if (current + delta < last - 1) {
-    range.push('...')
-  }
-  
-  range.unshift(1)
-  if (last > 1) range.push(last)
-  
-  return range
-})
-
-// Methods
-const onSearch = () => {
-  dashboardStore.setSearch(searchInput.value)
-}
-
-const changePage = (page) => {
-  if (page !== '...') {
-    dashboardStore.fetchUsers(page)
-  }
-}
-
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'active': return 'bg-success'
-    case 'inactive': return 'bg-secondary'
-    case 'pending': return 'bg-warning'
-    default: return 'bg-light text-dark'
-  }
-}
-
-const editUser = (user) => {
-  alert(`Edit user: ${user.name}\n\nThis is just a demo. In a real app, this would open a modal.`)
-}
-
-const deleteUser = async (id) => {
-  if (confirm('Are you sure you want to delete this user?')) {
-    alert(`Delete user with ID: ${id}\n\nThis is just a demo. In a real app, this would call API.`)
-  }
-}
-
-const togglePagination = () => {
-  dashboardStore.togglePagination()
-}
-
-const stressTest = () => {
-  alert('Stress test functionality would be implemented here.\n\nThis would call JMeter/Locust scripts to test system performance.')
-}
-
-// Lifecycle
-onMounted(() => {
-  dashboardStore.fetchUsers(1)
-})
-</script>
+              <!-- User Table (admin/editor) or Product List (viewer) -->
+              <div v-if="authStore.hasRole('admin') || authStore.hasRole('editor')">
+                <div class="table-responsive">
+                  <!-- ...existing code for user table... -->
+                </div>
+              </div>
+              <div v-else>
+                <ProductListView />
+              </div>
